@@ -10,12 +10,8 @@
 # |     |  O |
 # При ходе пользователя у надо спрашивать номер строки и столбца, куда он хочет сделать ход
 import random
-import os
+import re
 import time
-
-
-def clear():
-    os.system('cls')
 
 
 field = [[0, 0, 0],
@@ -42,22 +38,15 @@ def draw_field():
 
 
 def select_side():
-    is_side_selected = False
-    player_side = ""
-    while is_side_selected is False:
-        player_side = (input("Введите сторону (X или O): ")
-                       .replace(" ", "")
-                       .replace("0", "O")
-                       .upper())
-        if len(player_side) > 1:
+    while True:
+        player_side = (input("Введите сторону (X или O): "))
+        if re.match(r"[xX]", player_side):
+            return 1
+        elif re.match(r"[oO0]", player_side):
+            return -1
+        else:
             print("Некорректный ввод")
             continue
-        if player_side != "X" and player_side != "O":
-            print("Сторона не выбрана")
-            continue
-        is_side_selected = True
-
-    return 1 if player_side == "X" else -1
 
 
 def user_move():
@@ -132,7 +121,6 @@ if player == -1:
     ai = 1
 
     time.sleep(2)
-    clear()
     print("Ход компьютера")
     r, c = ai_move()
     field[r][c] = ai
@@ -148,7 +136,6 @@ while True:
         break
 
     time.sleep(2)
-    clear()
 
     print("Ход компьютера")
     r, c = ai_move()
