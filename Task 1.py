@@ -130,6 +130,10 @@ player = select_side()
 draw_field()
 if player == -1:
     ai = 1
+
+    time.sleep(2)
+    clear()
+    print("Ход компьютера")
     r, c = ai_move()
     field[r][c] = ai
     draw_field()
