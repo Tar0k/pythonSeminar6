@@ -40,9 +40,9 @@ def draw_field():
 def select_side():
     while True:
         player_side = (input("Введите сторону (X или O): "))
-        if re.match(r"[xX]", player_side):
+        if re.match(r"[xX]$", player_side):
             return 1
-        elif re.match(r"[oO0]", player_side):
+        elif re.match(r"[oO0]$", player_side):
             return -1
         else:
             print("Некорректный ввод")
@@ -50,31 +50,21 @@ def select_side():
 
 
 def user_move():
-    is_correct_input = False
-    move = None
-    while is_correct_input is False:
+    while True:
         move = input("Введите клетку адрес клетки через запятую: ").replace(" ", "")
-        if "," not in move:
-            print("В вводе нет ,")
+        move = re.match(r"^[1-3],[1-3]$", move)
+        if move:
+            move = move.group()
+        else:
+            print("Некорректный ввод")
             continue
-
-        move = move.split(",")
-        if not move[0].isnumeric() or not move[1].isnumeric():
-            print("Неверный формат чисел")
-            continue
-
-        move = int(move[0]) - 1, int(move[1]) - 1
-        if move[0] > len(field) or move[1] > len(field):
-            print("Значение за пределами поля")
-            continue
-
-        if field[move[0]][move[1]] != 0:
+        column, row = move.split(",")
+        column, row = int(column) - 1, int(row) - 1
+        if field[column][row] != 0:
             print("Ячейка уже заполнена")
             continue
 
-        is_correct_input = True
-
-    return move[0], move[1]
+        return column, row
 
 
 def ai_move():
