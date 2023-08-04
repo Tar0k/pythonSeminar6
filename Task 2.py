@@ -25,7 +25,7 @@ class GameLog:
         self.game_log = {}
 
     def __str__(self):
-        table_name = "СТАТИСТИКА\n"
+        table_name = "\nСТАТИСТИКА\n"
         header = ["Команда", "Всего игр", "Побед", "Ничьих", "Поражений", "Очков"]
         header = " | ".join([item.center(11) for item in header]) + "\n"
         separator = "-" * len(header) + "\n"

@@ -10,20 +10,28 @@
 # |     |  O |
 # При ходе пользователя у надо спрашивать номер строки и столбца, куда он хочет сделать ход
 import random
+import os
+import time
 
-field = [[1, 1, None],
-         [-1, None, None],
-         [-1, None, None]]
+
+def clear():
+    os.system('cls')
+
+
+field = [[0, 0, 0],
+         [0, 0, 0],
+         [0, 0, 0]]
 
 
 def symbol(value):
-    if value is None:
+    if value == 0:
         return " "
     elif value == 1:
         return "X"
     elif value == -1:
-
         return "O"
+    else:
+        return "!!!"
 
 
 def draw_field():
@@ -40,15 +48,16 @@ def select_side():
         player_side = (input("Введите сторону (X или O): ")
                        .replace(" ", "")
                        .replace("0", "O")
-                       .lower())
+                       .upper())
         if len(player_side) > 1:
             print("Некорректный ввод")
             continue
-        if player_side != "x" and player_side != "o":
+        if player_side != "X" and player_side != "O":
             print("Сторона не выбрана")
             continue
         is_side_selected = True
-    return player_side
+
+    return 1 if player_side == "X" else -1
 
 
 def user_move():
@@ -70,11 +79,12 @@ def user_move():
             print("Значение за пределами поля")
             continue
 
-        if field[move[0]][move[1]] is not None:
+        if field[move[0]][move[1]] != 0:
             print("Ячейка уже заполнена")
             continue
 
         is_correct_input = True
+
     return move[0], move[1]
 
 
@@ -82,15 +92,63 @@ def ai_move():
     free_fields = []
     for (row_index, row) in enumerate(field):
         for (column_index, column) in enumerate(row):
-            if column is None:
+            if column == 0:
                 free_fields.append((row_index, column_index))
     return random.choice(free_fields)
 
 
 def is_finished():
+    # Check win in rows
     for row in field:
         if sum(row) == 3 or sum(row) == -3:
             return True
 
+    # Check win in columns
+    col1, col2, col3 = field
+    columns = list(zip(col1, col2, col3))
+    columns_sums = [sum(item) for item in columns]
+    if 3 in columns_sums or -3 in columns_sums:
+        return True
+
+    # Check win in diagonals
+    if abs(sum((field[0][0], field[1][1], field[2][2]))) == 3 or abs(sum((field[0][2], field[1][1], field[2][0]))) == 3:
+        return True
+
+    # Check available moves
+    free_fields = []
+    for (row_index, row) in enumerate(field):
+        for (column_index, column) in enumerate(row):
+            if column == 0:
+                free_fields.append((row_index, column_index))
+    if len(free_fields) == 0:
+        return True
+
+    return False
+
+
+player = select_side()
 draw_field()
-print(user_move())
+if player == -1:
+    ai = 1
+    r, c = ai_move()
+    field[r][c] = ai
+    draw_field()
+
+else:
+    ai = -1
+while True:
+    r, c = user_move()
+    field[r][c] = player
+    draw_field()
+    if is_finished():
+        break
+
+    time.sleep(2)
+    clear()
+
+    print("Ход компьютера")
+    r, c = ai_move()
+    field[r][c] = ai
+    draw_field()
+    if is_finished():
+        break
